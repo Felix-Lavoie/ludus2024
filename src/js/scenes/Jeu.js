@@ -44,6 +44,13 @@ class Jeu extends Phaser.Scene {
             jump: Phaser.Input.Keyboard.KeyCodes.SPACE,
             shift: Phaser.Input.Keyboard.KeyCodes.SHIFT
         });
+        // animations
+        this.anims.create({
+            key: 'climb',
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 15 }),
+            frameRate: 10,
+            repeat: -1
+        })
     }
   
     update() {
@@ -58,15 +65,20 @@ class Jeu extends Phaser.Scene {
 
     if (this.cursors.left.isDown) {
         this.player.setVelocityX(-velocity);
+        this.player.anims.play('climb', true)
     } else if (this.cursors.right.isDown) {
         this.player.setVelocityX(velocity);
+        this.player.anims.play('climb', true)
     } else if (this.cursors.up.isDown) {
         this.player.setVelocityY(-velocity);
+        this.player.anims.play('climb', true)
     } else if (this.cursors.down.isDown) {
         this.player.setVelocityY(velocity);
+        this.player.anims.play('climb', true)
     } else {
         this.player.setVelocityY(20);
         this.player.setVelocityX(0);
+        this.player.anims.play('climb', false)
     }
     // Saut
     if (this.cursors.jump.isDown && this.player.body.touching.down) {
