@@ -62,7 +62,7 @@ class Jeu extends Phaser.Scene {
     if (this.cursors.shift.isDown) {
       velocity = runSpeed;
     }
-
+// x et y separer
     if (this.cursors.left.isDown) {
         this.player.setVelocityX(-velocity);
         this.player.anims.play('climb', true)
@@ -75,7 +75,7 @@ class Jeu extends Phaser.Scene {
     } else if (this.cursors.down.isDown) {
         this.player.setVelocityY(velocity);
         this.player.anims.play('climb', true)
-    } else {
+    } else { // try if cursor is not down do that 
         this.player.setVelocityY(20);
         this.player.setVelocityX(0);
         this.player.anims.play('climb', false)
