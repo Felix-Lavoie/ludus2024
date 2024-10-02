@@ -1,0 +1,13 @@
+cave https://szadiart.itch.io/rpg-worlds-ca
+rocks/trees https://free-game-assets.itch.io/free-fields-tileset-pixel-art-for-tower-defense
+background+traps https://anokolisa.itch.io/basic-140-tiles-grassland-and-mines
+mountains-bg https://assetstore.unity.com/packages/2d/environments/painted-hq-2d-forest-medieval-background-97738
+character https://craftpix.net/freebies/free-3-character-sprite-sheets-pixel-art/
+icons https://kicked-in-teeth.itch.io/button-ui?download
+
+tense-music https://www.epidemicsound.com/track/R4q4b2ly6q/
+main-theme? https://stocktune.com/free-music/celestial-dawn-symphony-215564-132643
+sad https://stocktune.com/free-music/chamber-midnight-whispers-165942-107315
+dead https://pixabay.com/sound-effects/retro-video-game-death-95730/
+win-sound https://pixabay.com/sound-effects/badge-coin-win-14675/
+win-musique? https://stocktune.com/free-music/ascent-in-melodic-waves-96375-72398

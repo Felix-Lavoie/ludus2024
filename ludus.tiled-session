@@ -1,0 +1,43 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "tiled/base_lvl.tmx",
+    "expandedProjectPaths": [
+        ".",
+        "tiled"
+    ],
+    "fileStates": {
+        "": {
+            "scaleInEditor": 0.75
+        },
+        "tiled/base_lvl.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 401.3333333333333,
+                "y": 674.6666666666665
+            }
+        },
+        "tiled/base_lvl.tmx#MainLev2.0": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 0.75
+        }
+    },
+    "last.exportedFilePath": "C:/Users/arago/OneDrive/Documents/GitHub/ludus2024/src/img/maps",
+    "last.imagePath": "C:/Users/arago/OneDrive/Documents/GitHub/ludus2024/tiled",
+    "map.height": 32,
+    "map.lastUsedExportFilter": "Fichiers de carte JSON (*.tmj *.json)",
+    "map.lastUsedFormat": "tmx",
+    "map.width": 25,
+    "openFiles": [
+        "tiled/base_lvl.tmx"
+    ],
+    "project": "ludus.tiled-project",
+    "property.type": "bool",
+    "recentFiles": [
+        "tiled/base_lvl.tmx"
+    ],
+    "tileset.embedInMap": true
+}
