@@ -11,10 +11,24 @@ class Jeu extends Phaser.Scene {
             frameWidth: 48,
             frameHeight: 48
         })
+        this.load.spritesheet('playerDeath', './src/img/characters/3_SteamMan/SteamMan_death.png', {
+            frameWidth: 48,
+            frameHeight: 48
+        })
+        this.load.spritesheet('playerHurt', './src/img/characters/3_SteamMan/SteamMan_hurt.png', {
+            frameWidth: 48,
+            frameHeight: 48
+        })
+        this.load.spritesheet('playerIdle', './src/img/characters/3_SteamMan/SteamMan_idle.png', {
+            frameWidth: 48,
+            frameHeight: 48
+        })
+        this.load.spritesheet('playerJump', './src/img/characters/3_SteamMan/SteamMan_jump.png', {
+            frameWidth: 48,
+            frameHeight: 48
+        })
         this.load.tilemapTiledJSON('carte', './src/img/maps/base_lvl.json')
         this.load.image('imgCarte', './src/img/tiles_cave/MainLev2.0.png')
-        //temp
-        this.load.image('ground', 'https://assets.codepen.io/9367036/Platform%2848x48%29.png')
     }
   
     create() {
@@ -66,9 +80,33 @@ class Jeu extends Phaser.Scene {
         // animations
         this.anims.create({
             key: 'climb',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 4 }),
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 5 }),
             frameRate: 10,
             repeat: -1
+        })
+
+        this.anims.create({
+            key: 'death',
+            frames: this.anims.generateFrameNumbers('playerDeath', { start: 0, end: 5 }),
+            frameRate: 10,
+        })
+
+        this.anims.create({
+            key: 'hurt',
+            frames: this.anims.generateFrameNumbers('playerHurt', { start: 0, end: 2 }),
+            frameRate: 10,
+        })
+
+        this.anims.create({
+            key: 'idle',
+            frames: this.anims.generateFrameNumbers('playerIdle', { start: 0, end: 3 }),
+            frameRate: 10,
+        })
+
+        this.anims.create({
+            key: 'jump',
+            frames: this.anims.generateFrameNumbers('playerJump', { start: 0, end: 5 }),
+            frameRate: 10,
         })
         // UI
         //let bgF = this.add.image(config.width / 2, config.height / 2, "bgF").setScale(1.6);
@@ -99,6 +137,7 @@ class Jeu extends Phaser.Scene {
         this.player.anims.play('climb', true)
     } else {
         this.player.setVelocityX(0);
+        this.player.anims.play('hurt',)
     }
     
     if (this.cursors.up.isDown) {
