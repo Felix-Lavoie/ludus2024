@@ -7,6 +7,7 @@ class Jeu extends Phaser.Scene {
         this.load.image('bgF', './src/img/tiles/tiles/Assets/Background_2.png')
         this.load.image('bgC', './src/img/tiles/tiles/Assets/Background_1.png')
         this.load.image('btn', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_Bar01a')
+        this.load.image('assetCheet1', './src/img/tiles_cave/decorative.png')
         this.load.spritesheet('player', './src/img/characters/3_SteamMan/SteamMan_climb.png', {
             frameWidth: 48,
             frameHeight: 48
@@ -108,6 +109,14 @@ class Jeu extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers('playerJump', { start: 0, end: 5 }),
             frameRate: 10,
         })
+
+        const roche = this.add.image(0, 0, "assetCheet1").setOrigin(0, 0).setCrop(290, 0, 69, 115).setAngle(180).setPosition(740, 800);
+        this.tweens.add({
+           targets: roche,
+          y: 1500,
+          duration: 3000,
+          repeat: -1,
+        });
         // UI
         //let bgF = this.add.image(config.width / 2, config.height / 2, "bgF").setScale(1.6);
         //let bgC = this.add.image(config.width / 2, config.height / 2, "bgC").setScale(1.6);
@@ -129,6 +138,7 @@ class Jeu extends Phaser.Scene {
       velocity = runSpeed;
     }
 
+    // left and right
     if (this.cursors.left.isDown) {
         this.player.setVelocityX(-velocity);
         this.player.anims.play('climb', true)
@@ -137,9 +147,9 @@ class Jeu extends Phaser.Scene {
         this.player.anims.play('climb', true)
     } else {
         this.player.setVelocityX(0);
-        this.player.anims.play('hurt',)
     }
     
+    // up and down
     if (this.cursors.up.isDown) {
         this.player.setVelocityY(-velocity);
         this.player.anims.play('climb', true)
@@ -149,7 +159,6 @@ class Jeu extends Phaser.Scene {
     } else { 
         this.player.setVelocityY(20);
     }
-    //console.log(this.player.x, this.player.y)
 
     // Saut
     if (this.cursors.jump.isDown && this.player.body.touching.down) {
