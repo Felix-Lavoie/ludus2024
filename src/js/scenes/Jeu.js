@@ -28,14 +28,16 @@ class Jeu extends Phaser.Scene {
             frameWidth: 48,
             frameHeight: 48
         })
-        this.load.tilemapTiledJSON('carte', './src/img/maps/base_lvl.json')
+        this.load.tilemapTiledJSON('carte', './src/img/maps/base_lvl_fn.json')
         this.load.image('imgCarte', './src/img/tiles_cave/MainLev2.0.png')
+        this.load.image('imgCarte_ground', './src/img/tiles_front/Texture/ground.png')
+        this.load.image('imgCarte_obj', './src/img/tiles_front/Texture/objet.png')
     }
   
     create() {
         // Monde
         this.worldWidth = 1600;
-        this.worldHeight = 2000;
+        this.worldHeight = 8000;
         this.physics.world.setBounds(
             this.worldWidth / -2,
             this.worldHeight / -2,
@@ -46,14 +48,20 @@ class Jeu extends Phaser.Scene {
         const maCarte = this.make.tilemap({ key: "carte" });
 
         // Tileset
-        const tileset = maCarte.addTilesetImage("MainLev2.0", "imgCarte");
+        const tileset1 = maCarte.addTilesetImage("MainLev2.0", "imgCarte");
+        const tileset2 = maCarte.addTilesetImage("start", "imgCarte_ground");
+        const tileset3 = maCarte.addTilesetImage("objects", "imgCarte_obj");
 
         // Calques
-        const bgLayer = maCarte.createLayer("base", [tileset], 0, 0);
-        const collisionLayer = maCarte.createLayer("roche", [tileset], 0, 0);
+        const bjLayer = maCarte.createLayer("background", [tileset1, tileset2, tileset3], 0, 0);
+        const baseLayer = maCarte.createLayer("base", [tileset1, tileset2, tileset3], 0, 0);
+        const collisionLayer = maCarte.createLayer("roche", [tileset1, tileset2, tileset3], 0, 0);
+        const videLayer = maCarte.createLayer("vide", [tileset1, tileset2, tileset3], 0, 0);
+        const objLayer = maCarte.createLayer("obj", [tileset1, tileset2, tileset3], 0, 0);
 
         collisionLayer.setCollisionByProperty({ collision: true });
-        bgLayer.setCollisionByProperty({ collision: true });
+        objLayer.setCollisionByProperty({ collision: true });
+        baseLayer.setCollisionByProperty({ collision: true });
         // Joueur
         this.player = this.physics.add.sprite(300, 950, "player").setScale(2).refreshBody();;
         this.player.setBounce(0);
@@ -62,7 +70,8 @@ class Jeu extends Phaser.Scene {
         this.player.body.setGravityY(100);
         // colliders
         this.physics.add.collider(this.player, collisionLayer)
-        this.physics.add.collider(this.player, bgLayer)
+        this.physics.add.collider(this.player, baseLayer)
+        this.physics.add.collider(this.player, objLayer)
         // Caméra
         this.cameras.main.setBounds(
             this.worldWidth / -2,
@@ -165,7 +174,7 @@ class Jeu extends Phaser.Scene {
         this.player.setVelocityY(-500);
     }
     // Mort
-    if (this.player.y > 1000 + this.player.height) {
+    if (this.player.y > 3200 + this.player.height) {
         this.player.setPosition(config.width / 2, 950);
         this.player.setVelocityY(0);
     } else if (this.player.y < -40 + this.player.height) {

@@ -14692,7 +14692,7 @@
   </tile>
  </tileset>
  <tileset firstgid="2449" name="start" tilewidth="32" tileheight="32" tilecount="256" columns="16">
-  <image source="../src/img/tiles_front/Texture/TX Tileset Ground.png" width="512" height="512"/>
+  <image source="../src/img/tiles_front/Texture/ground.png" width="512" height="512"/>
   <tile id="0">
    <properties>
     <property name="collision" type="bool" value="true"/>
@@ -15975,7 +15975,7 @@
   </tile>
  </tileset>
  <tileset firstgid="2705" name="objects" tilewidth="32" tileheight="32" tilecount="1024" columns="32">
-  <image source="../src/img/tiles_front/Texture/TX Village Props.png" width="1024" height="1024"/>
+  <image source="../src/img/tiles_front/Texture/objet.png" width="1024" height="1024"/>
   <tile id="0">
    <properties>
     <property name="collision" type="bool" value="true"/>
