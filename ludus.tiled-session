@@ -3,41 +3,71 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "tiled/base_lvl.tmx",
+    "activeFile": "tiled/base_lvl_fn.tmx",
     "expandedProjectPaths": [
         ".",
         "tiled"
     ],
     "fileStates": {
         "": {
+            "scaleInDock": 0.75,
             "scaleInEditor": 0.75
         },
         "tiled/base_lvl.tmx": {
-            "scale": 0.75,
-            "selectedLayer": 0,
+            "scale": 0.5,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 401.3333333333333,
-                "y": 674.6666666666665
+                "x": 662,
+                "y": 2698
             }
         },
         "tiled/base_lvl.tmx#MainLev2.0": {
-            "scaleInDock": 0.75,
+            "scaleInDock": 0.33,
             "scaleInEditor": 0.75
+        },
+        "tiled/base_lvl.tmx#objects": {
+            "scaleInEditor": 0.75
+        },
+        "tiled/base_lvl.tmx#start": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tiled/base_lvl_fn.tmx": {
+            "scale": 0.25,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 1008,
+                "y": 1432
+            }
+        },
+        "tiled/base_lvl_fn.tmx#MainLev2.0": {
+            "scaleInDock": 0.5
+        },
+        "tiled/base_lvl_fn.tmx#objects": {
+            "scaleInDock": 1
+        },
+        "tiled/base_lvl_fn.tmx#start": {
+            "scaleInDock": 0.75
         }
     },
     "last.exportedFilePath": "C:/Users/arago/OneDrive/Documents/GitHub/ludus2024/src/img/maps",
-    "last.imagePath": "C:/Users/arago/OneDrive/Documents/GitHub/ludus2024/tiled",
+    "last.imagePath": "C:/Users/arago/OneDrive/Documents/GitHub/ludus2024/src/img/tiles_front/Texture",
     "map.height": 32,
     "map.lastUsedExportFilter": "Fichiers de carte JSON (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
     "map.width": 25,
     "openFiles": [
-        "tiled/base_lvl.tmx"
+        "tiled/base_lvl_fn.tmx"
     ],
     "project": "ludus.tiled-project",
     "property.type": "bool",
     "recentFiles": [
+        "tiled/base_lvl_fn.tmx",
         "tiled/base_lvl.tmx"
     ],
-    "tileset.embedInMap": true
+    "tileset.embedInMap": true,
+    "tileset.tileSize": {
+        "height": 32,
+        "width": 32
+    }
 }
