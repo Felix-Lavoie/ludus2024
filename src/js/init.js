@@ -4,7 +4,7 @@ const config = {
     pixelArt: true,
     width: 800,
     height: 400,
-    scene: [Acceuil, Jeu, How, Credit, Partie_termine, Victoire],
+    scene: [Jeu, Acceuil, How, Credit, Partie_termine, Victoire],
     physics: {
         default: "arcade",
         arcade: {

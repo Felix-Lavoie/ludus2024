@@ -6,7 +6,7 @@ class Jeu extends Phaser.Scene {
     preload() {
         this.load.image('bgF', './src/img/tiles/tiles/Assets/Background_2.png')
         this.load.image('bgC', './src/img/tiles/tiles/Assets/Background_1.png')
-        this.load.image('btn', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_Bar01a')
+        //this.load.image('btn', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_Bar01a')
         this.load.image('assetCheet1', './src/img/tiles_cave/decorative.png')
         this.load.spritesheet('player', './src/img/characters/3_SteamMan/SteamMan_climb.png', {
             frameWidth: 48,
@@ -25,6 +25,10 @@ class Jeu extends Phaser.Scene {
             frameHeight: 48
         })
         this.load.spritesheet('playerJump', './src/img/characters/3_SteamMan/SteamMan_jump.png', {
+            frameWidth: 48,
+            frameHeight: 48
+        })
+        this.load.spritesheet('playerWalk', './src/img/characters/3_SteamMan/SteamMan_walk.png', {
             frameWidth: 48,
             frameHeight: 48
         })
@@ -62,22 +66,27 @@ class Jeu extends Phaser.Scene {
         collisionLayer.setCollisionByProperty({ collision: true });
         objLayer.setCollisionByProperty({ collision: true });
         baseLayer.setCollisionByProperty({ collision: true });
+        videLayer.setCollisionByProperty({ vide: true });
+
         // Joueur
-        this.player = this.physics.add.sprite(300, 950, "player").setScale(2).refreshBody();;
+        this.player = this.physics.add.sprite(300, 2670, "player").setScale(2).refreshBody();;
         this.player.setBounce(0);
         this.player.setSize(21, 37);
         this.player.setOffset(6, 11);
         this.player.body.setGravityY(100);
+
         // colliders
         this.physics.add.collider(this.player, collisionLayer)
         this.physics.add.collider(this.player, baseLayer)
         this.physics.add.collider(this.player, objLayer)
+
         // Caméra
         this.cameras.main.setBounds(
             this.worldWidth / -2,
             this.worldHeight / -2,
         );
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+
         // touches
         this.cursors = this.input.keyboard.addKeys({
             up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -87,12 +96,19 @@ class Jeu extends Phaser.Scene {
             jump: Phaser.Input.Keyboard.KeyCodes.SPACE,
             shift: Phaser.Input.Keyboard.KeyCodes.SHIFT
         });
+
         // animations
         this.anims.create({
             key: 'climb',
             frames: this.anims.generateFrameNumbers('player', { start: 0, end: 5 }),
             frameRate: 10,
             repeat: -1
+        })
+
+        this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers('playerWalk', { start: 0, end: 5 }),
+            frameRate: 10,
         })
 
         this.anims.create({
@@ -126,55 +142,92 @@ class Jeu extends Phaser.Scene {
           duration: 3000,
           repeat: -1,
         });
+        
         // UI
-        //let bgF = this.add.image(config.width / 2, config.height / 2, "bgF").setScale(1.6);
-        //let bgC = this.add.image(config.width / 2, config.height / 2, "bgC").setScale(1.6);
+        /*let bgF = this.add.image(config.width / 2, config.height / 2, "bgF").setScale(1.6);
+        let bgC = this.add.image(config.width / 2, config.height / 2, "bgC").setScale(1.6);
 
         let btn1 = this.add.image(400, 350, "btn").setScale(3).setInteractive();
         this.txtBtn3 = this.add.text(378, 335, "quitter", { fontFamily: 'arial'}).setColor('black');
         btn1.on("pointerdown", () => {
               this.scene.start("acceuil");
-        });
+        });*/
+
+        //overlap
+        this.isOnSurface = true
+        this.physics.add.overlap(
+            this.player, videLayer, () => {
+              this.isOnSurface = false
+              this.time.delayedCall(10, ()=> {
+                this.isOnSurface = true
+              })
+            }, (player, tile) => {
+                return tile && tile.properties && tile.properties.vide === true;
+             }
+        );
     }
   
     update() {
     // Déplacements
     const walkSpeed = 150;
-    const runSpeed = 250;
+    const runSpeed = 850;
     let velocity = walkSpeed;
         
     if (this.cursors.shift.isDown) {
       velocity = runSpeed;
+      console.log(this.isOnSurface, this.player.x, this.player.y, this.player.body.velocity, )
     }
 
     // left and right
     if (this.cursors.left.isDown) {
         this.player.setVelocityX(-velocity);
-        this.player.anims.play('climb', true)
     } else if (this.cursors.right.isDown) {
         this.player.setVelocityX(velocity);
-        this.player.anims.play('climb', true)
     } else {
         this.player.setVelocityX(0);
     }
     
     // up and down
-    if (this.cursors.up.isDown) {
+    if (this.cursors.up.isDown && this.isOnSurface == true) {
         this.player.setVelocityY(-velocity);
-        this.player.anims.play('climb', true)
-    } else if (this.cursors.down.isDown) {
+    } else if (this.cursors.down.isDown  && this.isOnSurface == true) {
         this.player.setVelocityY(velocity);
-        this.player.anims.play('climb', true)
     } else { 
         this.player.setVelocityY(20);
     }
 
-    // Saut
-    if (this.cursors.jump.isDown && this.player.body.touching.down) {
-        this.player.setVelocityY(-500);
+    // fall
+    if(this.isOnSurface == false) {
+        this.player.setVelocityY(500)
     }
+
+    //jump
+    if (this.cursors.jump.isDown && this.player.body.blocked.down) {
+        this.player.setVelocityY(-4000);
+    }
+
+    // anim 
+    if (this.isOnSurface == true) {
+        this.player.anims.play('climb', true)
+        //temp?
+        this.player.setFlipX(false);
+    } else if (this.isOnSurface == false && this.player.body.blocked.down && this.cursors.left.isDown) {
+        this.player.anims.play('walk', true)
+        this.player.setFlipX(true);
+        this.player.setOffset(24, 11);
+        this.player.setOrigin(0.75, 0.5);
+    } else if (this.isOnSurface == false && this.player.body.blocked.down && this.cursors.right.isDown) {
+        this.player.anims.play('walk', true)
+        this.player.setFlipX(false);
+        this.player.setOffset(6, 11);
+        this.player.setOrigin(0.5, 0.5);
+    } else if (this.isOnSurface == false && this.player.body.blocked.down && this.player.body.velocity.x == 0) {
+        this.player.anims.play('idle', true)
+    }
+   
+    
     // Mort
-    if (this.player.y > 3200 + this.player.height) {
+    if (this.player.y > 3200 + this.player.height) { 
         this.player.setPosition(config.width / 2, 950);
         this.player.setVelocityY(0);
     } else if (this.player.y < -40 + this.player.height) {
