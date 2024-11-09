@@ -8,6 +8,7 @@ class Jeu extends Phaser.Scene {
         this.load.image('bgC', './src/img/tiles/tiles/Assets/Background_1.png')
         //this.load.image('btn', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_Bar01a')
         this.load.image('assetCheet1', './src/img/tiles_cave/decorative.png')
+        this.load.image('enemyBullet', './src/img/objects/2_Objects/4_Stone/9.png' )
         this.load.spritesheet('player', './src/img/characters/3_SteamMan/SteamMan_climb.png', {
             frameWidth: 48,
             frameHeight: 48
@@ -29,6 +30,14 @@ class Jeu extends Phaser.Scene {
             frameHeight: 48
         })
         this.load.spritesheet('playerWalk', './src/img/characters/3_SteamMan/SteamMan_walk.png', {
+            frameWidth: 48,
+            frameHeight: 48
+        })
+        this.load.spritesheet('enemyAttack', './src/img/characters/1_Woodcutter/Woodcutter_attack3.png', {
+            frameWidth: 48,
+            frameHeight: 48
+        })
+        this.load.spritesheet('enemyIddle', './src/img/characters/1_Woodcutter/Woodcutter_idle.png', {
             frameWidth: 48,
             frameHeight: 48
         })
@@ -68,17 +77,63 @@ class Jeu extends Phaser.Scene {
         baseLayer.setCollisionByProperty({ collision: true });
         videLayer.setCollisionByProperty({ vide: true });
 
+        // enemy
+        this.enemy = this.physics.add.sprite(1030, 1735, "enemyIddle").setScale(2).refreshBody();;
+        this.enemy.setBounce(0);
+        this.enemy.setSize(21, 37);
+        this.enemy.setOffset(24, 11);
+        this.enemy.setOrigin(0.75, 0.5);
+        this.enemy.body.setGravityY(0);
+        this.enemy.setFlipX(true);
+        this.isShouting = false;
+
+        this.enemyBullets = this.physics.add.group({
+            defaultKey: "enemyBullet",
+            maxSize: 1
+        });
+
+        this.enemyFiring = this.time.addEvent({
+        delay: 666,
+        loop: true,
+        callback: () => {
+            const bullet = this.enemyBullets.get(this.enemy.x - 5, this.enemy.y);
+            if (bullet) {
+                bullet.setActive(true);
+                bullet.setVisible(true);
+                bullet.setVelocity(-100, 0);
+            }
+        }
+        });
+
         // Joueur
         this.player = this.physics.add.sprite(300, 2670, "player").setScale(2).refreshBody();;
         this.player.setBounce(0);
         this.player.setSize(21, 37);
         this.player.setOffset(6, 11);
         this.player.body.setGravityY(100);
+        this.pointDeVie = 5;
+        this.played = false
+
+        this.physics.add.overlap(
+            this.player,
+            this.enemyBullets,
+            (player, bullet) => {
+              if (player.alpha != 1) return;
+              bullet.setActive(false);
+              bullet.setVisible(false);
+              bullet.y = -999999;
+              this.pointDeVie -= 1;
+              player.play('hurt')
+        });
 
         // colliders
         this.physics.add.collider(this.player, collisionLayer)
         this.physics.add.collider(this.player, baseLayer)
         this.physics.add.collider(this.player, objLayer)
+
+        this.physics.add.collider(this.enemy, collisionLayer)
+        this.physics.add.collider(this.enemy, baseLayer)
+        this.physics.add.collider(this.enemy, objLayer)
 
         // Caméra
         this.cameras.main.setBounds(
@@ -135,6 +190,20 @@ class Jeu extends Phaser.Scene {
             frameRate: 10,
         })
 
+        // enemy
+        this.anims.create({
+            key: 'eAttack',
+            frames: this.anims.generateFrameNumbers('enemyAttack', { start: 0, end: 5 }),
+            frameRate: 10,
+        })
+
+        this.anims.create({
+            key: 'eIdle',
+            frames: this.anims.generateFrameNumbers('enemyIddle', { start: 0, end: 3 }),
+            frameRate: 10,
+        })
+
+        // obstacle
         const roche = this.add.image(0, 0, "assetCheet1").setOrigin(0, 0).setCrop(290, 0, 69, 115).setAngle(180).setPosition(740, 800);
         this.tweens.add({
            targets: roche,
@@ -175,7 +244,7 @@ class Jeu extends Phaser.Scene {
         
     if (this.cursors.shift.isDown) {
       velocity = runSpeed;
-      console.log(this.isOnSurface, this.player.x, this.player.y, this.player.body.velocity, )
+      console.log(this.player.x, this.player.y, this.pointDeVie )
     }
 
     // left and right
@@ -207,7 +276,10 @@ class Jeu extends Phaser.Scene {
     }
 
     // anim 
-    if (this.isOnSurface == true) {
+    if (this.pointDeVie <= 0 && this.played == false) {
+        this.played = truea
+        this.player.anims.play('death')
+    } else if (this.isOnSurface == true) {
         this.player.anims.play('climb', true)
         //temp?
         this.player.setFlipX(false);
@@ -224,15 +296,27 @@ class Jeu extends Phaser.Scene {
     } else if (this.isOnSurface == false && this.player.body.blocked.down && this.player.body.velocity.x == 0) {
         this.player.anims.play('idle', true)
     }
+
+    if (this.isShouting == false) {
+        this.enemy.anims.play('eIdle', true)
+    } else if (this.isShouting == true) {
+        this.enemy.anims.play('eAttack', true)
+    }
    
     
     // Mort
-    if (this.player.y > 3200 + this.player.height) { 
-        this.player.setPosition(config.width / 2, 950);
-        this.player.setVelocityY(0);
-    } else if (this.player.y < -40 + this.player.height) {
-        this.player.setPosition(config.width / 2, 950);
-        this.player.setVelocityY(0);
+    if (this.pointDeVie <= 0) {
+        this.player.setVelocityX(0);
+        this.player.setVelocityY(500);
     }
-  }
+
+    this.enemyBullets.children.each((bullet) => {
+        let cachee = !this.cameras.main.worldView.contains(bullet.x, bullet.y);
+        if (bullet.active && cachee) {
+          bullet.setActive(false);
+         bullet.setVisible(false);
+        }
+    });
+
+    }
 }
