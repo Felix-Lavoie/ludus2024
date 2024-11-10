@@ -49,14 +49,9 @@ class Jeu extends Phaser.Scene {
   
     create() {
         // Monde
-        this.worldWidth = 1600;
-        this.worldHeight = 8000;
-        this.physics.world.setBounds(
-            this.worldWidth / -2,
-            this.worldHeight / -2,
-            this.worldWidth,
-            this.worldHeight
-        );
+        this.worldWidth = 1280;
+        this.worldHeight = 3150;
+        this.physics.world.setBounds(0, 0, this.worldWidth, this.worldHeight);
         // Tilemap
         const maCarte = this.make.tilemap({ key: "carte" });
 
@@ -111,20 +106,13 @@ class Jeu extends Phaser.Scene {
         this.player.setSize(21, 37);
         this.player.setOffset(6, 11);
         this.player.body.setGravityY(100);
-        this.pointDeVie = 5;
+        this.pointDeVie = 2;
+        this.isdead = false
         this.played = false
+        this.player.body.setGravityY(1000);
+        this.player.setCollideWorldBounds(true);
 
-        this.physics.add.overlap(
-            this.player,
-            this.enemyBullets,
-            (player, bullet) => {
-              if (player.alpha != 1) return;
-              bullet.setActive(false);
-              bullet.setVisible(false);
-              bullet.y = -999999;
-              this.pointDeVie -= 1;
-              player.play('hurt')
-        });
+        
 
         // colliders
         this.physics.add.collider(this.player, collisionLayer)
@@ -136,10 +124,7 @@ class Jeu extends Phaser.Scene {
         this.physics.add.collider(this.enemy, objLayer)
 
         // Caméra
-        this.cameras.main.setBounds(
-            this.worldWidth / -2,
-            this.worldHeight / -2,
-        );
+        this.cameras.main.setBounds(this.worldWidth / -2, this.worldHeight / -2,);
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
         // touches
@@ -170,12 +155,14 @@ class Jeu extends Phaser.Scene {
             key: 'death',
             frames: this.anims.generateFrameNumbers('playerDeath', { start: 0, end: 5 }),
             frameRate: 10,
+            repeat: 0
         })
 
         this.anims.create({
             key: 'hurt',
             frames: this.anims.generateFrameNumbers('playerHurt', { start: 0, end: 2 }),
             frameRate: 10,
+            repeat: 0
         })
 
         this.anims.create({
@@ -195,6 +182,7 @@ class Jeu extends Phaser.Scene {
             key: 'eAttack',
             frames: this.anims.generateFrameNumbers('enemyAttack', { start: 0, end: 5 }),
             frameRate: 10,
+            repeat: 0
         })
 
         this.anims.create({
@@ -234,6 +222,18 @@ class Jeu extends Phaser.Scene {
                 return tile && tile.properties && tile.properties.vide === true;
              }
         );
+
+        this.physics.add.overlap(
+            this.player,
+            this.enemyBullets,
+            (player, bullet) => {
+              if (player.alpha != 1) return;
+              bullet.setActive(false);
+              bullet.setVisible(false);
+              bullet.y = -999999;
+              this.pointDeVie -= 1;
+              player.anims.play('hurt')
+        });
     }
   
     update() {
@@ -244,7 +244,7 @@ class Jeu extends Phaser.Scene {
         
     if (this.cursors.shift.isDown) {
       velocity = runSpeed;
-      console.log(this.player.x, this.player.y, this.pointDeVie )
+      console.log(this.player.x, this.player.y, this.pointDeVie, this.isOnSurface, this.player.body.velocity.y, this.isdead)
     }
 
     // left and right
@@ -257,28 +257,28 @@ class Jeu extends Phaser.Scene {
     }
     
     // up and down
-    if (this.cursors.up.isDown && this.isOnSurface == true) {
+    if (this.cursors.up.isDown && this.isOnSurface == true && this.isdead == false) {
         this.player.setVelocityY(-velocity);
-    } else if (this.cursors.down.isDown  && this.isOnSurface == true) {
+    } else if (this.cursors.down.isDown  && this.isOnSurface == true && this.isdead == false) {
         this.player.setVelocityY(velocity);
-    } else { 
+    } else if (this.isOnSurface == true && this.isdead == false) { 
         this.player.setVelocityY(20);
-    }
-
-    // fall
-    if(this.isOnSurface == false) {
-        this.player.setVelocityY(500)
-    }
+    } 
 
     //jump
     if (this.cursors.jump.isDown && this.player.body.blocked.down) {
-        this.player.setVelocityY(-4000);
+        this.player.setVelocityY(-300);
     }
 
     // anim 
     if (this.pointDeVie <= 0 && this.played == false) {
-        this.played = truea
-        this.player.anims.play('death')
+        this.player.anims.play('death', true)
+        this.player.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {
+            this.played = true
+            console.log(this.played)
+            //cant stop anim so change page to death
+            //this.scene.start("death");
+        })
     } else if (this.isOnSurface == true) {
         this.player.anims.play('climb', true)
         //temp?
@@ -299,15 +299,21 @@ class Jeu extends Phaser.Scene {
 
     if (this.isShouting == false) {
         this.enemy.anims.play('eIdle', true)
+        this.isShouting = true
     } else if (this.isShouting == true) {
         this.enemy.anims.play('eAttack', true)
+        this.time.delayedCall(600, ()=> {
+        this.isShouting = false
+        })
     }
-   
     
     // Mort
+    if (this.player.body.velocity.y >= 1500 && this.pointDeVie <= 0) {
+        this.player.setVelocityY(1500);
+    }
     if (this.pointDeVie <= 0) {
+        this.isdead = true
         this.player.setVelocityX(0);
-        this.player.setVelocityY(500);
     }
 
     this.enemyBullets.children.each((bullet) => {
