@@ -159,6 +159,13 @@ class Jeu extends Phaser.Scene {
         })
 
         this.anims.create({
+            key: 'deathEnd',
+            frames: this.anims.generateFrameNumbers('playerDeath', { start: 5, end: 5 }),
+            frameRate: 10,
+            repeat: 0
+        })
+
+        this.anims.create({
             key: 'hurt',
             frames: this.anims.generateFrameNumbers('playerHurt', { start: 0, end: 2 }),
             frameRate: 10,
@@ -244,7 +251,7 @@ class Jeu extends Phaser.Scene {
         
     if (this.cursors.shift.isDown) {
       velocity = runSpeed;
-      console.log(this.player.x, this.player.y, this.pointDeVie, this.isOnSurface, this.player.body.velocity.y, this.isdead)
+      console.log(this.player.x, this.player.y, this.pointDeVie, this.isOnSurface, this.player.body.velocity.y, this.played)
     }
 
     // left and right
@@ -273,15 +280,12 @@ class Jeu extends Phaser.Scene {
     // anim 
     if (this.pointDeVie <= 0 && this.played == false) {
         this.player.anims.play('death', true)
-        this.player.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function () {
+        this.time.delayedCall(600, ()=> {
             this.played = true
-            console.log(this.played)
-            //cant stop anim so change page to death
-            //this.scene.start("death");
-        })
-    } else if (this.isOnSurface == true) {
+            this.player.anims.play('deathEnd', true)
+         })
+    } else if (this.isOnSurface == true && this.isdead == false) {
         this.player.anims.play('climb', true)
-        //temp?
         this.player.setFlipX(false);
     } else if (this.isOnSurface == false && this.player.body.blocked.down && this.cursors.left.isDown) {
         this.player.anims.play('walk', true)
@@ -307,9 +311,11 @@ class Jeu extends Phaser.Scene {
         })
     }
     
+    //add if velocity > x amount quand touche au sol meurt avec anim death
+
     // Mort
-    if (this.player.body.velocity.y >= 1500 && this.pointDeVie <= 0) {
-        this.player.setVelocityY(1500);
+    if (this.player.body.velocity.y >= 1400 && this.pointDeVie <= 0) {
+        this.player.setVelocityY(1400);
     }
     if (this.pointDeVie <= 0) {
         this.isdead = true
