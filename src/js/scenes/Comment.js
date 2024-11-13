@@ -6,7 +6,7 @@ class How extends Phaser.Scene {
       preload() {
           this.load.image('bgF', './src/img/tiles/tiles/Assets/Background_2.png')
           this.load.image('bgC', './src/img/tiles/tiles/Assets/Background_1.png')
-          this.load.image('btn', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_Bar01a')
+          this.load.image('btn', './src/img/ui/01_Flat_Theme/UI_Flat_Banner02a.png')
       }
     
       create() {

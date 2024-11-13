@@ -4,13 +4,13 @@ class Jeu extends Phaser.Scene {
       }
       
     preload() {
-        this.load.audio('theme', './src/music/main_theme.mp3')
+        this.load.audio('mainTheme', './src/music/main_theme.mp3')
         this.load.audio('soundWin', './src/music/badge-coin-win-14675.mp3')
         this.load.audio('soundDeath', './src/music/retro-video-game-death-95730.mp3')
         this.load.audio('soundHurt', './src/music/retro-hurt-2-236675.mp3')
         this.load.image('bgF', './src/img/tiles/tiles/Assets/Background_2.png')
         this.load.image('bgC', './src/img/tiles/tiles/Assets/Background_1.png')
-        //this.load.image('btn', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_Bar01a')
+        this.load.image('btn', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_Banner02a.png')
         this.load.image('assetCheet1', './src/img/tiles_cave/decorative.png')
         this.load.image('enemyBullet', './src/img/objects/2_Objects/4_Stone/9.png')
         this.load.image('rocher', './src/img/objects/2_Objects/4_Stone/11.png')
@@ -53,7 +53,6 @@ class Jeu extends Phaser.Scene {
     }
   
     create() {
-
         this.input.on("pointermove", (pointer) => {
             console.log(parseInt(pointer.x) + ", " + parseInt(pointer.y));
           });
@@ -306,11 +305,11 @@ class Jeu extends Phaser.Scene {
         )
 
         // music
-        this.bgMusic = this.sound.add('theme', {
+        this.bgMusic = this.sound.add('mainTheme', {
             volume: 0.3,
             loop: true,
         });
-        //this.bgMusic.play();
+        this.bgMusic.play();
         this.soundHurt = this.sound.add('soundHurt', {
             volume: 0.3,
             loop: false,
