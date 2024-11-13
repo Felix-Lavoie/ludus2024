@@ -4,11 +4,16 @@ class Jeu extends Phaser.Scene {
       }
       
     preload() {
+        this.load.audio('theme', './src/music/main_theme.mp3')
+        this.load.audio('soundWin', './src/music/badge-coin-win-14675.mp3')
+        this.load.audio('soundDeath', './src/music/retro-video-game-death-95730.mp3')
+        this.load.audio('soundHurt', './src/music/retro-hurt-2-236675.mp3')
         this.load.image('bgF', './src/img/tiles/tiles/Assets/Background_2.png')
         this.load.image('bgC', './src/img/tiles/tiles/Assets/Background_1.png')
         //this.load.image('btn', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_Bar01a')
         this.load.image('assetCheet1', './src/img/tiles_cave/decorative.png')
-        this.load.image('enemyBullet', './src/img/objects/2_Objects/4_Stone/9.png' )
+        this.load.image('enemyBullet', './src/img/objects/2_Objects/4_Stone/9.png')
+        this.load.image('rocher', './src/img/objects/2_Objects/4_Stone/11.png')
         this.load.spritesheet('player', './src/img/characters/3_SteamMan/SteamMan_climb.png', {
             frameWidth: 48,
             frameHeight: 48
@@ -48,6 +53,14 @@ class Jeu extends Phaser.Scene {
     }
   
     create() {
+
+        this.input.on("pointermove", (pointer) => {
+            console.log(parseInt(pointer.x) + ", " + parseInt(pointer.y));
+          });
+        
+        // hud
+        this.scene.launch("hud");
+        
         // Monde
         this.worldWidth = 1280;
         this.worldHeight = 3150;
@@ -81,24 +94,26 @@ class Jeu extends Phaser.Scene {
         this.enemy.body.setGravityY(0);
         this.enemy.setFlipX(true);
         this.isShouting = false;
-
+        
         this.enemyBullets = this.physics.add.group({
             defaultKey: "enemyBullet",
-            maxSize: 1
+            maxSize: 5
         });
 
         this.enemyFiring = this.time.addEvent({
-        delay: 666,
+        delay: 1500,
         loop: true,
         callback: () => {
             const bullet = this.enemyBullets.get(this.enemy.x - 5, this.enemy.y);
             if (bullet) {
                 bullet.setActive(true);
                 bullet.setVisible(true);
-                bullet.setVelocity(-100, 0);
+                bullet.setVelocity(-(Math.floor(Math.random() * 200) + 100), (Math.floor(Math.random() * 100) + 20));
+                this.isShouting = true
             }
         }
         });
+        
 
         // Joueur
         this.player = this.physics.add.sprite(300, 2670, "player").setScale(2).refreshBody();;
@@ -109,6 +124,8 @@ class Jeu extends Phaser.Scene {
         this.pointDeVie = 2;
         this.isdead = false
         this.played = false
+        this.tooFast = false
+        this.hurted = false
         this.player.body.setGravityY(1000);
         this.player.setCollideWorldBounds(true);
 
@@ -126,6 +143,9 @@ class Jeu extends Phaser.Scene {
         // Caméra
         this.cameras.main.setBounds(this.worldWidth / -2, this.worldHeight / -2,);
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+
+        this.cameraWorld = this.cameras.add(280, 0, 1280, 2736)
+        
 
         // touches
         this.cursors = this.input.keyboard.addKeys({
@@ -199,23 +219,51 @@ class Jeu extends Phaser.Scene {
         })
 
         // obstacle
-        const roche = this.add.image(0, 0, "assetCheet1").setOrigin(0, 0).setCrop(290, 0, 69, 115).setAngle(180).setPosition(740, 800);
-        this.tweens.add({
-           targets: roche,
-          y: 1500,
-          duration: 3000,
-          repeat: -1,
+        this.roche = this.physics.add.group({
+            defaultKey: "rocher",
+            maxSize: 30
         });
-        
-        // UI
-        /*let bgF = this.add.image(config.width / 2, config.height / 2, "bgF").setScale(1.6);
-        let bgC = this.add.image(config.width / 2, config.height / 2, "bgC").setScale(1.6);
 
-        let btn1 = this.add.image(400, 350, "btn").setScale(3).setInteractive();
-        this.txtBtn3 = this.add.text(378, 335, "quitter", { fontFamily: 'arial'}).setColor('black');
-        btn1.on("pointerdown", () => {
-              this.scene.start("acceuil");
-        });*/
+        this.roche3 = this.time.addEvent({
+            delay: 1500,
+            loop: true,
+            callback: () => {
+                const bullet = this.roche.get(700, 1300);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity(0, (Math.floor(Math.random() * 150) + 100));
+                    this.isShouting = true
+                }
+            }
+        });
+        this.roche2 = this.time.addEvent({
+            delay: 5000,
+            loop: true,
+            callback: () => {
+                const bullet = this.roche.get(600, 1300);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity(0, (Math.floor(Math.random() * 150) + 100));
+                    this.isShouting = true
+                }
+            }
+        });
+        this.roche3 = this.time.addEvent({
+            delay: 3000,
+            loop: true,
+            callback: () => {
+                const bullet = this.roche.get(500, 1200);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity(0, (Math.floor(Math.random() * 150) + 100));
+                    this.isShouting = true
+                }
+            }
+        });
+
 
         //overlap
         this.isOnSurface = true
@@ -239,7 +287,42 @@ class Jeu extends Phaser.Scene {
               bullet.setVisible(false);
               bullet.y = -999999;
               this.pointDeVie -= 1;
-              player.anims.play('hurt')
+              this.hurted = true
+              this.soundHurt.play();
+        });
+
+        this.physics.add.overlap(
+            this.player,
+            this.roche,
+            (player, roche) => {
+                if (player.alpha != 1) return;
+                roche.setActive(false);
+                roche.setVisible(false);
+                roche.y = -999999;
+                this.pointDeVie -= 1;
+                this.hurted = true
+                this.soundHurt.play();
+            }
+        )
+
+        // music
+        this.bgMusic = this.sound.add('theme', {
+            volume: 0.3,
+            loop: true,
+        });
+        //this.bgMusic.play();
+        this.soundHurt = this.sound.add('soundHurt', {
+            volume: 0.3,
+            loop: false,
+        });
+        this.soundDeath = this.sound.add('soundDeath', {
+            volume: 0.3,
+            loop: false,
+        });
+        this.soundWin = this.sound.add('soundWin', {
+            volume: 0.7,
+            loop: false,
+            seek: 2
         });
     }
   
@@ -251,13 +334,13 @@ class Jeu extends Phaser.Scene {
         
     if (this.cursors.shift.isDown) {
       velocity = runSpeed;
-      console.log(this.player.x, this.player.y, this.pointDeVie, this.isOnSurface, this.player.body.velocity.y, this.played)
+      console.log(this.player.x, this.player.y, this.pointDeVie, this.player.body.velocity.y, this.tooFast)
     }
 
     // left and right
-    if (this.cursors.left.isDown) {
+    if (this.cursors.left.isDown && this.isdead == false) {
         this.player.setVelocityX(-velocity);
-    } else if (this.cursors.right.isDown) {
+    } else if (this.cursors.right.isDown && this.isdead == false) {
         this.player.setVelocityX(velocity);
     } else {
         this.player.setVelocityX(0);
@@ -273,57 +356,83 @@ class Jeu extends Phaser.Scene {
     } 
 
     //jump
-    if (this.cursors.jump.isDown && this.player.body.blocked.down) {
+    if (this.cursors.jump.isDown && this.player.body.blocked.down && this.isdead == false) {
         this.player.setVelocityY(-300);
     }
 
     // anim 
-    if (this.pointDeVie <= 0 && this.played == false) {
+    if (this.isdead == true && this.played == false) {
         this.player.anims.play('death', true)
+        this.soundDeath.play();
         this.time.delayedCall(600, ()=> {
             this.played = true
             this.player.anims.play('deathEnd', true)
-         })
+        })
+    } else if (this.hurted == true && this.isdead == false) {
+        this.player.anims.play('hurt', true)
+        this.time.delayedCall(300, ()=> {
+            this.hurted = false
+            this.player.stop()
+        })
     } else if (this.isOnSurface == true && this.isdead == false) {
         this.player.anims.play('climb', true)
         this.player.setFlipX(false);
-    } else if (this.isOnSurface == false && this.player.body.blocked.down && this.cursors.left.isDown) {
+    } else if (this.isOnSurface == false && this.player.body.blocked.down && this.cursors.left.isDown && this.isdead == false) {
         this.player.anims.play('walk', true)
         this.player.setFlipX(true);
         this.player.setOffset(24, 11);
         this.player.setOrigin(0.75, 0.5);
-    } else if (this.isOnSurface == false && this.player.body.blocked.down && this.cursors.right.isDown) {
+    } else if (this.isOnSurface == false && this.player.body.blocked.down && this.cursors.right.isDown && this.isdead == false) {
         this.player.anims.play('walk', true)
         this.player.setFlipX(false);
         this.player.setOffset(6, 11);
         this.player.setOrigin(0.5, 0.5);
-    } else if (this.isOnSurface == false && this.player.body.blocked.down && this.player.body.velocity.x == 0) {
+    } else if (this.isOnSurface == false && this.player.body.blocked.down && this.player.body.velocity.x == 0 && this.isdead == false) {
         this.player.anims.play('idle', true)
     }
 
     if (this.isShouting == false) {
         this.enemy.anims.play('eIdle', true)
-        this.isShouting = true
     } else if (this.isShouting == true) {
         this.enemy.anims.play('eAttack', true)
         this.time.delayedCall(600, ()=> {
         this.isShouting = false
         })
     }
-    
-    //add if velocity > x amount quand touche au sol meurt avec anim death
 
     // Mort
-    if (this.player.body.velocity.y >= 1400 && this.pointDeVie <= 0) {
+    if (this.player.body.velocity.y >= 1400) {
         this.player.setVelocityY(1400);
     }
     if (this.pointDeVie <= 0) {
         this.isdead = true
         this.player.setVelocityX(0);
     }
+    if (this.player.body.velocity.y >= 800) {
+        this.tooFast = true
+    } else if (this.isOnSurface == true) {
+        this.tooFast = false
+    }
+    if (this.tooFast == true && this.player.body.blocked.down) {
+        this.isdead = true
+    }
 
+    // win
+    if (this.player.body.y < 50) {
+        this.soundWin.play();
+    }
+
+    // projectiles
     this.enemyBullets.children.each((bullet) => {
-        let cachee = !this.cameras.main.worldView.contains(bullet.x, bullet.y);
+        let cachee = !this.cameraWorld.worldView.contains(bullet.x, bullet.y);
+        if (bullet.active && cachee) {
+          bullet.setActive(false);
+         bullet.setVisible(false);
+        }
+    });
+
+    this.roche.children.each((bullet) => {
+        let cachee = !this.cameraWorld.worldView.contains(bullet.x, bullet.y);
         if (bullet.active && cachee) {
           bullet.setActive(false);
          bullet.setVisible(false);
