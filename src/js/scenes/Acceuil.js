@@ -15,7 +15,7 @@ class Acceuil extends Phaser.Scene {
         let bgC = this.add.image(config.width / 2, config.height / 2, "bgC").setScale(1.6);
         
         let btn1 = this.add.image(400, 250, "btn").setScale(3).setInteractive();
-        this.txtBtn1 = this.add.text(388, 235, "jeu", { fontFamily: 'arial'}).setColor('black');
+        this.txtBtn1 = this.add.text(360, 235, "commencer", { fontFamily: 'arial'}).setColor('black');
         btn1.on("pointerdown", () => {
             this.scene.start("jeu");
         });
@@ -32,7 +32,7 @@ class Acceuil extends Phaser.Scene {
             this.scene.start("credit");
         });
 
-        let iconOn = this.add.image(-180, -310, 'icon').setOrigin(0, 0).setCrop(97, 160, 16, 16).setScale(2).setInteractive();
+        /*let iconOn = this.add.image(-180, -310, 'icon').setOrigin(0, 0).setCrop(97, 160, 16, 16).setScale(2).setInteractive();
         let iconOff = this.add.image(-210, -310, 'icon').setOrigin(0, 0).setCrop(113, 160, 16, 16).setScale(2).setVisible(false);
 
         iconOn.on('pointerdown', () => {
@@ -42,18 +42,6 @@ class Acceuil extends Phaser.Scene {
         iconOff.on('pointerdown', () => {
             iconOff.setVisible(false)
             iconOn.setVisible(true).setInteractive()
-        })
-        
-        //          _       _
-        // Dont work \(-_-)/
-        //let scaleX = config.width / img.width;
-        //let scaleY = config.height / img.height;
-        //let scale = Math.max(scaleX, scaleY);
-        //bgF.setScale(scale);
-        //bgC.setScale(scale);
-    }
-
-    update() {
-
+        })*/
     }
 }

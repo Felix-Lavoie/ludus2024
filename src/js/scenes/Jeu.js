@@ -10,10 +10,12 @@ class Jeu extends Phaser.Scene {
         this.load.audio('soundHurt', './src/music/retro-hurt-2-236675.mp3')
         this.load.image('bgF', './src/img/tiles/tiles/Assets/Background_2.png')
         this.load.image('bgC', './src/img/tiles/tiles/Assets/Background_1.png')
-        this.load.image('btn', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_Banner02a.png')
+        this.load.image('txtBg', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_Banner03a.png')
+        this.load.image('txtNext', './src/img/ui/buttonPlay.png')
         this.load.image('assetCheet1', './src/img/tiles_cave/decorative.png')
         this.load.image('enemyBullet', './src/img/objects/2_Objects/4_Stone/9.png')
         this.load.image('rocher', './src/img/objects/2_Objects/4_Stone/11.png')
+        this.load.image('barre', './src/img/tiles_cave/barre.png')
         this.load.spritesheet('player', './src/img/characters/3_SteamMan/SteamMan_climb.png', {
             frameWidth: 48,
             frameHeight: 48
@@ -53,10 +55,6 @@ class Jeu extends Phaser.Scene {
     }
   
     create() {
-        this.input.on("pointermove", (pointer) => {
-            console.log(parseInt(pointer.x) + ", " + parseInt(pointer.y));
-          });
-        
         // hud
         this.scene.launch("hud");
         
@@ -125,10 +123,9 @@ class Jeu extends Phaser.Scene {
         this.played = false
         this.tooFast = false
         this.hurted = false
+        this.stamina = 1000
         this.player.body.setGravityY(1000);
         this.player.setCollideWorldBounds(true);
-
-        
 
         // colliders
         this.physics.add.collider(this.player, collisionLayer)
@@ -143,7 +140,7 @@ class Jeu extends Phaser.Scene {
         this.cameras.main.setBounds(this.worldWidth / -2, this.worldHeight / -2,);
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
-        this.cameraWorld = this.cameras.add(280, 0, 1280, 2736)
+        this.cameraWorld = this.cameras.add(2280, 0, 1280, 3000)
         
 
         // touches
@@ -223,7 +220,7 @@ class Jeu extends Phaser.Scene {
             maxSize: 30
         });
 
-        this.roche3 = this.time.addEvent({
+        this.roche1 = this.time.addEvent({
             delay: 1500,
             loop: true,
             callback: () => {
@@ -262,9 +259,148 @@ class Jeu extends Phaser.Scene {
                 }
             }
         });
+        this.roche4 = this.time.addEvent({
+            delay: 4000,
+            loop: true,
+            callback: () => {
+                const bullet = this.roche.get(940, 1320);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity(0, (Math.floor(Math.random() * 150) + 100));
+                    this.isShouting = true
+                }
+            }
+        });
+        this.roche5 = this.time.addEvent({
+            delay: 3000,
+            loop: true,
+            callback: () => {
+                const bullet = this.roche.get(1050, 2230);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity(0, (Math.floor(Math.random() * 150) + 100));
+                    this.isShouting = true
+                }
+            }
+        });
 
+        this.roche6 = this.time.addEvent({
+            delay: 3000,
+            loop: true,
+            callback: () => {
+                const bullet = this.roche.get(500, 980);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity(-(Math.floor(Math.random() * 100) + 50), 0);
+                    bullet.setGravityY(100)
+                    this.isShouting = true
+                }
+            }
+        });
 
-        //overlap
+        this.roche7 = this.time.addEvent({
+            delay: 3000,
+            loop: true,
+            callback: () => {
+                const bullet = this.roche.get(955, 1150);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity(-(Math.floor(Math.random() * 100) + 50), 0);
+                    bullet.setGravityY(100)
+                    this.isShouting = true
+                }
+            }
+        });
+
+        this.roche8 = this.time.addEvent({
+            delay: 3000,
+            loop: true,
+            callback: () => {
+                const bullet = this.roche.get(740, 1150);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity((Math.floor(Math.random() * 100) + 50), 0);
+                    bullet.setGravityY(100)
+                    this.isShouting = true
+                }
+            }
+        });
+        
+        this.roche9 = this.time.addEvent({
+            delay: 3000,
+            loop: true,
+            callback: () => {
+                const bullet = this.roche.get(260, 1260);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity((Math.floor(Math.random() * 100) + 50), 0);
+                    bullet.setGravityY(100)
+                    this.isShouting = true
+                }
+            }
+        });
+
+        // collectible
+        this.barre = this.physics.add.group({
+            defaultKey: "barre",
+            maxSize: 4
+        });
+        this.barre1 = this.time.addEvent({
+            delay: 0,
+            loop: false,
+            callback: () => {
+                const bullet = this.barre.get(900, 2100).setScale(0.3);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity(0, 0);
+                }
+            }
+        });
+        this.barre2 = this.time.addEvent({
+            delay: 0,
+            loop: false,
+            callback: () => {
+                const bullet = this.barre.get(350, 1700).setScale(0.3);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity(0, 0);
+                }
+            }
+        });
+        this.barre3 = this.time.addEvent({
+            delay: 0,
+            loop: false,
+            callback: () => {
+                const bullet = this.barre.get(850, 1200).setScale(0.3);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity(0, 0);
+                }
+            }
+        });
+        this.barre4 = this.time.addEvent({
+            delay: 0,
+            loop: false,
+            callback: () => {
+                const bullet = this.barre.get(650, 750).setScale(0.3);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity(0, 0);
+                }
+            }
+        });
+
+        // overlap
         this.isOnSurface = true
         this.physics.add.overlap(
             this.player, videLayer, () => {
@@ -304,6 +440,18 @@ class Jeu extends Phaser.Scene {
             }
         )
 
+        this.physics.add.overlap(
+            this.player,
+            this.barre,
+            (player, barre) => {
+                if (player.alpha != 1) return;
+                barre.setActive(false);
+                barre.setVisible(false);
+                barre.y = -999999;
+                this.stamina += 500
+            }
+        )
+
         // music
         this.bgMusic = this.sound.add('mainTheme', {
             volume: 0.3,
@@ -323,39 +471,75 @@ class Jeu extends Phaser.Scene {
             loop: false,
             seek: 2
         });
+
+        // ludique
+        
+        this.txtCount = 0
+        this.txtBg = this.add.image(470, 2580, "txtBg").setScale(5);
+        this.txt1 = this.add.text(335, 2550, `Vous vous retrouver dans un montagne 
+            apres l'avoir vue au loin.`, { fontFamily: 'arial' }).setColor('black');
+        this.txtNext = this.add.image(600, 2590, "txtNext").setScale(2).setInteractive();
+        this.txtNext.on("pointerdown", () => {
+            this.txt1.setVisible(false)
+            this.txt2 = this.add.text(330, 2550, `Rien ne vous tente plus que de la monter. 
+                Alors, qu'attendez vous?`, { fontFamily: 'arial' }).setColor('black');
+            this.txtCount ++
+        });
     }
   
     update() {
     // Déplacements
     const walkSpeed = 150;
-    const runSpeed = 850;
+    const runSpeed = 250;
+    const stamWalk = 1
+    const stamSpeed = 2
+    let stam = stamWalk
     let velocity = walkSpeed;
+    //temp
+    console.log('stamina:' + this.stamina)
+    console.log('health:' + this.pointDeVie)
         
     if (this.cursors.shift.isDown) {
       velocity = runSpeed;
-      console.log(this.player.x, this.player.y, this.pointDeVie, this.player.body.velocity.y, this.tooFast)
+      stam = stamSpeed
+      //console.log(this.player.x, this.player.y, this.pointDeVie, this.player.body.velocity.y, this.tooFast)
     }
 
+    if (this.txtCount >= 2) {
+        this.txt2.setVisible(false)
+        this.txtBg.setVisible(false)
+        this.txtNext.setVisible(false)
+    }
+    
+    // score
+    if (this.cursors.up.isDown) {
+        this.events.emit("addScore");
+      }
+
     // left and right
-    if (this.cursors.left.isDown && this.isdead == false) {
+    if (this.cursors.left.isDown && this.isdead == false && this.stamina !== 0) {
         this.player.setVelocityX(-velocity);
-    } else if (this.cursors.right.isDown && this.isdead == false) {
+        this.stamina -= stam
+    } else if (this.cursors.right.isDown && this.isdead == false && this.stamina !== 0) {
         this.player.setVelocityX(velocity);
+        this.stamina -= stam
     } else {
         this.player.setVelocityX(0);
     }
     
     // up and down
-    if (this.cursors.up.isDown && this.isOnSurface == true && this.isdead == false) {
+    if (this.cursors.up.isDown && this.isOnSurface == true && this.isdead == false && this.stamina !== 0) {
         this.player.setVelocityY(-velocity);
-    } else if (this.cursors.down.isDown  && this.isOnSurface == true && this.isdead == false) {
+        this.stamina -= stam
+    } else if (this.cursors.down.isDown  && this.isOnSurface == true && this.isdead == false && this.stamina !== 0) {
         this.player.setVelocityY(velocity);
-    } else if (this.isOnSurface == true && this.isdead == false) { 
+        this.stamina -= stam
+    } else if (this.isOnSurface == true && this.isdead == false && this.stamina !== 0) { 
         this.player.setVelocityY(20);
     } 
 
     //jump
-    if (this.cursors.jump.isDown && this.player.body.blocked.down && this.isdead == false) {
+    if (this.cursors.jump.isDown && this.player.body.blocked.down && this.isdead == false && this.stamina !== 0) {
         this.player.setVelocityY(-300);
     }
 
@@ -400,8 +584,8 @@ class Jeu extends Phaser.Scene {
     }
 
     // Mort
-    if (this.player.body.velocity.y >= 1400) {
-        this.player.setVelocityY(1400);
+    if (this.player.body.velocity.y >= 1000) {
+        this.player.setVelocityY(1000);
     }
     if (this.pointDeVie <= 0) {
         this.isdead = true
@@ -415,10 +599,19 @@ class Jeu extends Phaser.Scene {
     if (this.tooFast == true && this.player.body.blocked.down) {
         this.isdead = true
     }
+    if (this.isdead == true) {
+        this.time.delayedCall(3000, ()=> {
+            this.bgMusic.stop();
+            this.scene.start("death")
+        })
+    }
 
     // win
-    if (this.player.body.y < 50) {
-        this.soundWin.play();
+    if (this.player.body.y > 50) {
+        this.soundWin.play();;
+    } else if (this.player.body.y < 50) {
+        this.bgMusic.stop();
+        this.scene.start("victoire")
     }
 
     // projectiles
