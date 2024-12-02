@@ -9,6 +9,9 @@ class Jeu extends Phaser.Scene {
         this.load.audio('soundDeath', './src/music/retro-video-game-death-95730.mp3')
         this.load.audio('soundHurt', './src/music/retro-hurt-2-236675.mp3')
         this.load.image('bgF', './src/img/tiles/tiles/Assets/Background_2.png')
+        this.load.image('bgHealth', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_Bar06a.png')
+        this.load.image('health', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_BarFill01c.png')
+        this.load.image('stam', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_BarFill01a.png')
         this.load.image('bgC', './src/img/tiles/tiles/Assets/Background_1.png')
         this.load.image('txtBg', './src/img/ui/01_Flat_Theme/Sprites/UI_Flat_Banner03a.png')
         this.load.image('txtNext', './src/img/ui/buttonPlay.png')
@@ -56,9 +59,14 @@ class Jeu extends Phaser.Scene {
   
     create() {
         // hud
-        this.scene.launch("hud");
+        this.crop = 32;
+        this.hudBgHealth = this.add.image(50, 20, "bgHealth").setScale(3);
+        this.health = this.add.image(50, 20, "health").setScale(2.6)
+        this.healthMid = this.add.image(50, 20, `health`).setCrop(0, 0, 16, 3).setScale(2.6)
+        this.hudBgStam = this.add.image(50, 40, "bgHealth").setScale(3);
+        this.stam = this.add.image(50, 40, "stam").setScale(2.6)
         
-        // Monde
+        // Monded
         this.worldWidth = 1280;
         this.worldHeight = 3150;
         this.physics.world.setBounds(0, 0, this.worldWidth, this.worldHeight);
@@ -118,7 +126,7 @@ class Jeu extends Phaser.Scene {
         this.player.setSize(21, 37);
         this.player.setOffset(6, 11);
         this.player.body.setGravityY(100);
-        this.pointDeVie = 2;
+        this.pointDeVie = 20;
         this.isdead = false
         this.played = false
         this.tooFast = false
@@ -141,6 +149,7 @@ class Jeu extends Phaser.Scene {
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
         this.cameraWorld = this.cameras.add(2280, 0, 1280, 3000)
+        this.cameraHud = this.cameras.add(0,0,200,200)
         
 
         // touches
@@ -490,15 +499,16 @@ class Jeu extends Phaser.Scene {
     update() {
     // Déplacements
     const walkSpeed = 150;
-    const runSpeed = 250;
+    const runSpeed = 1050;
     const stamWalk = 1
     const stamSpeed = 2
     let stam = stamWalk
     let velocity = walkSpeed;
-    //temp
-    console.log('stamina:' + this.stamina)
-    console.log('health:' + this.pointDeVie)
-        
+
+    // stam math
+    this.crop = this.stamina/32+0.75
+    this.stam.setCrop(0, 0, this.crop, 3)
+
     if (this.cursors.shift.isDown) {
       velocity = runSpeed;
       stam = stamSpeed
@@ -517,10 +527,10 @@ class Jeu extends Phaser.Scene {
       }
 
     // left and right
-    if (this.cursors.left.isDown && this.isdead == false && this.stamina !== 0) {
+    if (this.cursors.left.isDown && this.isdead == false && this.stamina > 0) {
         this.player.setVelocityX(-velocity);
         this.stamina -= stam
-    } else if (this.cursors.right.isDown && this.isdead == false && this.stamina !== 0) {
+    } else if (this.cursors.right.isDown && this.isdead == false && this.stamina > 0) {
         this.player.setVelocityX(velocity);
         this.stamina -= stam
     } else {
@@ -528,18 +538,18 @@ class Jeu extends Phaser.Scene {
     }
     
     // up and down
-    if (this.cursors.up.isDown && this.isOnSurface == true && this.isdead == false && this.stamina !== 0) {
+    if (this.cursors.up.isDown && this.isOnSurface == true && this.isdead == false && this.stamina > 0) {
         this.player.setVelocityY(-velocity);
         this.stamina -= stam
-    } else if (this.cursors.down.isDown  && this.isOnSurface == true && this.isdead == false && this.stamina !== 0) {
+    } else if (this.cursors.down.isDown  && this.isOnSurface == true && this.isdead == false && this.stamina > 0) {
         this.player.setVelocityY(velocity);
         this.stamina -= stam
-    } else if (this.isOnSurface == true && this.isdead == false && this.stamina !== 0) { 
+    } else if (this.isOnSurface == true && this.isdead == false && this.stamina > 0) { 
         this.player.setVelocityY(20);
     } 
 
     //jump
-    if (this.cursors.jump.isDown && this.player.body.blocked.down && this.isdead == false && this.stamina !== 0) {
+    if (this.cursors.jump.isDown && this.player.body.blocked.down && this.isdead == false && this.stamina > 0) {
         this.player.setVelocityY(-300);
     }
 
@@ -604,6 +614,16 @@ class Jeu extends Phaser.Scene {
             this.bgMusic.stop();
             this.scene.start("death")
         })
+    }
+
+    // hud
+    if (this.pointDeVie === 2) {
+        this.health.visible = true
+    } else if (this.pointDeVie === 1) {
+        this.health.visible = false
+        this.healthMid.visible = true
+    } else if (this.pointDeVie <= 0) {
+        this.healthMid.visible = false
     }
 
     // win
