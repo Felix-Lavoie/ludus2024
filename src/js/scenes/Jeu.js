@@ -1,8 +1,10 @@
 class Jeu extends Phaser.Scene {
     constructor() {
-        super({ key: "jeu" });
-      }
-      
+        super({
+            key: "jeu"
+        });
+    }
+
     preload() {
         this.load.audio('mainTheme', './src/music/main_theme.mp3')
         this.load.audio('soundWin', './src/music/badge-coin-win-14675.mp3')
@@ -56,7 +58,7 @@ class Jeu extends Phaser.Scene {
         this.load.image('imgCarte_ground', './src/img/tiles_front/Texture/ground.png')
         this.load.image('imgCarte_obj', './src/img/tiles_front/Texture/objet.png')
     }
-  
+
     create() {
         // hud
         this.crop = 32;
@@ -65,13 +67,16 @@ class Jeu extends Phaser.Scene {
         this.healthMid = this.add.image(50, 20, `health`).setCrop(0, 0, 16, 3).setScale(2.6)
         this.hudBgStam = this.add.image(50, 40, "bgHealth").setScale(3);
         this.stam = this.add.image(50, 40, "stam").setScale(2.6)
-        
+        this.heightTxt = this.add.text(5, 55, `hauter: 0`)
+
         // Monded
         this.worldWidth = 1280;
         this.worldHeight = 3150;
         this.physics.world.setBounds(0, 0, this.worldWidth, this.worldHeight);
         // Tilemap
-        const maCarte = this.make.tilemap({ key: "carte" });
+        const maCarte = this.make.tilemap({
+            key: "carte"
+        });
 
         // Tileset
         const tileset1 = maCarte.addTilesetImage("MainLev2.0", "imgCarte");
@@ -85,10 +90,18 @@ class Jeu extends Phaser.Scene {
         const videLayer = maCarte.createLayer("vide", [tileset1, tileset2, tileset3], 0, 0);
         const objLayer = maCarte.createLayer("obj", [tileset1, tileset2, tileset3], 0, 0);
 
-        collisionLayer.setCollisionByProperty({ collision: true });
-        objLayer.setCollisionByProperty({ collision: true });
-        baseLayer.setCollisionByProperty({ collision: true });
-        videLayer.setCollisionByProperty({ vide: true });
+        collisionLayer.setCollisionByProperty({
+            collision: true
+        });
+        objLayer.setCollisionByProperty({
+            collision: true
+        });
+        baseLayer.setCollisionByProperty({
+            collision: true
+        });
+        videLayer.setCollisionByProperty({
+            vide: true
+        });
 
         // enemy
         this.enemy = this.physics.add.sprite(1030, 1735, "enemyIddle").setScale(2).refreshBody();;
@@ -99,26 +112,26 @@ class Jeu extends Phaser.Scene {
         this.enemy.body.setGravityY(0);
         this.enemy.setFlipX(true);
         this.isShouting = false;
-        
+
         this.enemyBullets = this.physics.add.group({
             defaultKey: "enemyBullet",
             maxSize: 5
         });
 
         this.enemyFiring = this.time.addEvent({
-        delay: 1500,
-        loop: true,
-        callback: () => {
-            const bullet = this.enemyBullets.get(this.enemy.x - 5, this.enemy.y);
-            if (bullet) {
-                bullet.setActive(true);
-                bullet.setVisible(true);
-                bullet.setVelocity(-(Math.floor(Math.random() * 200) + 100), (Math.floor(Math.random() * 100) + 20));
-                this.isShouting = true
+            delay: 1500,
+            loop: true,
+            callback: () => {
+                const bullet = this.enemyBullets.get(this.enemy.x - 5, this.enemy.y);
+                if (bullet) {
+                    bullet.setActive(true);
+                    bullet.setVisible(true);
+                    bullet.setVelocity(-(Math.floor(Math.random() * 200) + 100), (Math.floor(Math.random() * 100) + 20));
+                    this.isShouting = true
+                }
             }
-        }
         });
-        
+
 
         // Joueur
         this.player = this.physics.add.sprite(300, 2670, "player").setScale(2).refreshBody();;
@@ -145,12 +158,12 @@ class Jeu extends Phaser.Scene {
         this.physics.add.collider(this.enemy, objLayer)
 
         // Caméra
-        this.cameras.main.setBounds(this.worldWidth / -2, this.worldHeight / -2,);
+        this.cameras.main.setBounds(this.worldWidth / -2, this.worldHeight / -2, );
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
         this.cameraWorld = this.cameras.add(2280, 0, 1280, 3000)
-        this.cameraHud = this.cameras.add(0,0,200,200)
-        
+        this.cameraHud = this.cameras.add(0, 0, 200, 200)
+
 
         // touches
         this.cursors = this.input.keyboard.addKeys({
@@ -165,61 +178,88 @@ class Jeu extends Phaser.Scene {
         // animations
         this.anims.create({
             key: 'climb',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 5 }),
+            frames: this.anims.generateFrameNumbers('player', {
+                start: 0,
+                end: 5
+            }),
             frameRate: 10,
             repeat: -1
         })
 
         this.anims.create({
             key: 'walk',
-            frames: this.anims.generateFrameNumbers('playerWalk', { start: 0, end: 5 }),
+            frames: this.anims.generateFrameNumbers('playerWalk', {
+                start: 0,
+                end: 5
+            }),
             frameRate: 10,
         })
 
         this.anims.create({
             key: 'death',
-            frames: this.anims.generateFrameNumbers('playerDeath', { start: 0, end: 5 }),
+            frames: this.anims.generateFrameNumbers('playerDeath', {
+                start: 0,
+                end: 5
+            }),
             frameRate: 10,
             repeat: 0
         })
 
         this.anims.create({
             key: 'deathEnd',
-            frames: this.anims.generateFrameNumbers('playerDeath', { start: 5, end: 5 }),
+            frames: this.anims.generateFrameNumbers('playerDeath', {
+                start: 5,
+                end: 5
+            }),
             frameRate: 10,
             repeat: 0
         })
 
         this.anims.create({
             key: 'hurt',
-            frames: this.anims.generateFrameNumbers('playerHurt', { start: 0, end: 2 }),
+            frames: this.anims.generateFrameNumbers('playerHurt', {
+                start: 0,
+                end: 2
+            }),
             frameRate: 10,
             repeat: 0
         })
 
         this.anims.create({
             key: 'idle',
-            frames: this.anims.generateFrameNumbers('playerIdle', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('playerIdle', {
+                start: 0,
+                end: 3
+            }),
             frameRate: 10,
         })
 
         this.anims.create({
             key: 'jump',
-            frames: this.anims.generateFrameNumbers('playerJump', { start: 0, end: 5 }),
+            frames: this.anims.generateFrameNumbers('playerJump', {
+                start: 0,
+                end: 5
+            }),
             frameRate: 10,
         })
 
         // enemy
         this.anims.create({
             key: 'eAttack',
-            frames: this.anims.generateFrameNumbers('enemyAttack', { start: 0, end: 5 }),
+            frames: this.anims.generateFrameNumbers('enemyAttack', {
+                start: 0,
+                end: 5
+            }),
             frameRate: 10,
             repeat: 0
         })
 
         this.anims.create({
             key: 'eIdle',
-            frames: this.anims.generateFrameNumbers('enemyIddle', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('enemyIddle', {
+                start: 0,
+                end: 3
+            }),
             frameRate: 10,
         })
 
@@ -339,7 +379,7 @@ class Jeu extends Phaser.Scene {
                 }
             }
         });
-        
+
         this.roche9 = this.time.addEvent({
             delay: 3000,
             loop: true,
@@ -413,27 +453,27 @@ class Jeu extends Phaser.Scene {
         this.isOnSurface = true
         this.physics.add.overlap(
             this.player, videLayer, () => {
-              this.isOnSurface = false
-              this.time.delayedCall(10, ()=> {
-                this.isOnSurface = true
-              })
+                this.isOnSurface = false
+                this.time.delayedCall(10, () => {
+                    this.isOnSurface = true
+                })
             }, (player, tile) => {
                 return tile && tile.properties && tile.properties.vide === true;
-             }
+            }
         );
 
         this.physics.add.overlap(
             this.player,
             this.enemyBullets,
             (player, bullet) => {
-              if (player.alpha != 1) return;
-              bullet.setActive(false);
-              bullet.setVisible(false);
-              bullet.y = -999999;
-              this.pointDeVie -= 1;
-              this.hurted = true
-              this.soundHurt.play();
-        });
+                if (player.alpha != 1) return;
+                bullet.setActive(false);
+                bullet.setVisible(false);
+                bullet.y = -999999;
+                this.pointDeVie -= 1;
+                this.hurted = true
+                this.soundHurt.play();
+            });
 
         this.physics.add.overlap(
             this.player,
@@ -482,174 +522,183 @@ class Jeu extends Phaser.Scene {
         });
 
         // ludique
-        
+
         this.txtCount = 0
         this.txtBg = this.add.image(470, 2580, "txtBg").setScale(5);
         this.txt1 = this.add.text(335, 2550, `Vous vous retrouver dans un montagne 
-            apres l'avoir vue au loin.`, { fontFamily: 'arial' }).setColor('black');
+            apres l'avoir vue au loin.`, {
+            fontFamily: 'arial'
+        }).setColor('black');
         this.txtNext = this.add.image(600, 2590, "txtNext").setScale(2).setInteractive();
         this.txtNext.on("pointerdown", () => {
             this.txt1.setVisible(false)
             this.txt2 = this.add.text(330, 2550, `Rien ne vous tente plus que de la monter. 
-                Alors, qu'attendez vous?`, { fontFamily: 'arial' }).setColor('black');
-            this.txtCount ++
+                Alors, qu'attendez vous?`, {
+                fontFamily: 'arial'
+            }).setColor('black');
+            this.txtCount++
         });
     }
-  
+
     update() {
-    // Déplacements
-    const walkSpeed = 150;
-    const runSpeed = 1050;
-    const stamWalk = 1
-    const stamSpeed = 2
-    let stam = stamWalk
-    let velocity = walkSpeed;
+        // Déplacements
+        const walkSpeed = 150;
+        const runSpeed = 1050;
+        const stamWalk = 1
+        const stamSpeed = 2
+        let stam = stamWalk
+        let velocity = walkSpeed;
 
-    // stam math
-    this.crop = this.stamina/32+0.75
-    this.stam.setCrop(0, 0, this.crop, 3)
+        // hud 
+        this.height = -((Math.floor(this.player.body.y)) - 3010);
+        this.heightTxt.setText(`hauter: ${this.height}`)
 
-    if (this.cursors.shift.isDown) {
-      velocity = runSpeed;
-      stam = stamSpeed
-      //console.log(this.player.x, this.player.y, this.pointDeVie, this.player.body.velocity.y, this.tooFast)
-    }
 
-    if (this.txtCount >= 2) {
-        this.txt2.setVisible(false)
-        this.txtBg.setVisible(false)
-        this.txtNext.setVisible(false)
-    }
-    
-    // score
-    if (this.cursors.up.isDown) {
-        this.events.emit("addScore");
-      }
+        // stam math
+        this.crop = this.stamina / 32 + 0.75
+        this.stam.setCrop(0, 0, this.crop, 3)
 
-    // left and right
-    if (this.cursors.left.isDown && this.isdead == false && this.stamina > 0) {
-        this.player.setVelocityX(-velocity);
-        this.stamina -= stam
-    } else if (this.cursors.right.isDown && this.isdead == false && this.stamina > 0) {
-        this.player.setVelocityX(velocity);
-        this.stamina -= stam
-    } else {
-        this.player.setVelocityX(0);
-    }
-    
-    // up and down
-    if (this.cursors.up.isDown && this.isOnSurface == true && this.isdead == false && this.stamina > 0) {
-        this.player.setVelocityY(-velocity);
-        this.stamina -= stam
-    } else if (this.cursors.down.isDown  && this.isOnSurface == true && this.isdead == false && this.stamina > 0) {
-        this.player.setVelocityY(velocity);
-        this.stamina -= stam
-    } else if (this.isOnSurface == true && this.isdead == false && this.stamina > 0) { 
-        this.player.setVelocityY(20);
-    } 
+        if (this.cursors.shift.isDown) {
+            velocity = runSpeed;
+            stam = stamSpeed
+            //console.log(this.player.x, this.player.y, this.pointDeVie, this.player.body.velocity.y, this.tooFast)
+        }
 
-    //jump
-    if (this.cursors.jump.isDown && this.player.body.blocked.down && this.isdead == false && this.stamina > 0) {
-        this.player.setVelocityY(-300);
-    }
+        if (this.txtCount >= 2) {
+            this.txt2.setVisible(false)
+            this.txtBg.setVisible(false)
+            this.txtNext.setVisible(false)
+        }
 
-    // anim 
-    if (this.isdead == true && this.played == false) {
-        this.player.anims.play('death', true)
-        this.soundDeath.play();
-        this.time.delayedCall(600, ()=> {
-            this.played = true
-            this.player.anims.play('deathEnd', true)
-        })
-    } else if (this.hurted == true && this.isdead == false) {
-        this.player.anims.play('hurt', true)
-        this.time.delayedCall(300, ()=> {
-            this.hurted = false
-            this.player.stop()
-        })
-    } else if (this.isOnSurface == true && this.isdead == false) {
-        this.player.anims.play('climb', true)
-        this.player.setFlipX(false);
-    } else if (this.isOnSurface == false && this.player.body.blocked.down && this.cursors.left.isDown && this.isdead == false) {
-        this.player.anims.play('walk', true)
-        this.player.setFlipX(true);
-        this.player.setOffset(24, 11);
-        this.player.setOrigin(0.75, 0.5);
-    } else if (this.isOnSurface == false && this.player.body.blocked.down && this.cursors.right.isDown && this.isdead == false) {
-        this.player.anims.play('walk', true)
-        this.player.setFlipX(false);
-        this.player.setOffset(6, 11);
-        this.player.setOrigin(0.5, 0.5);
-    } else if (this.isOnSurface == false && this.player.body.blocked.down && this.player.body.velocity.x == 0 && this.isdead == false) {
-        this.player.anims.play('idle', true)
-    }
+        // score
+        if (this.cursors.up.isDown) {
+            this.events.emit("addScore");
+        }
 
-    if (this.isShouting == false) {
-        this.enemy.anims.play('eIdle', true)
-    } else if (this.isShouting == true) {
-        this.enemy.anims.play('eAttack', true)
-        this.time.delayedCall(600, ()=> {
-        this.isShouting = false
-        })
-    }
+        // left and right
+        if (this.cursors.left.isDown && this.isdead == false && this.stamina > 0) {
+            this.player.setVelocityX(-velocity);
+            this.stamina -= stam
+        } else if (this.cursors.right.isDown && this.isdead == false && this.stamina > 0) {
+            this.player.setVelocityX(velocity);
+            this.stamina -= stam
+        } else {
+            this.player.setVelocityX(0);
+        }
 
-    // Mort
-    if (this.player.body.velocity.y >= 1000) {
-        this.player.setVelocityY(1000);
-    }
-    if (this.pointDeVie <= 0) {
-        this.isdead = true
-        this.player.setVelocityX(0);
-    }
-    if (this.player.body.velocity.y >= 800) {
-        this.tooFast = true
-    } else if (this.isOnSurface == true) {
-        this.tooFast = false
-    }
-    if (this.tooFast == true && this.player.body.blocked.down) {
-        this.isdead = true
-    }
-    if (this.isdead == true) {
-        this.time.delayedCall(3000, ()=> {
+        // up and down
+        if (this.cursors.up.isDown && this.isOnSurface == true && this.isdead == false && this.stamina > 0) {
+            this.player.setVelocityY(-velocity);
+            this.stamina -= stam
+        } else if (this.cursors.down.isDown && this.isOnSurface == true && this.isdead == false && this.stamina > 0) {
+            this.player.setVelocityY(velocity);
+            this.stamina -= stam
+        } else if (this.isOnSurface == true && this.isdead == false && this.stamina > 0) {
+            this.player.setVelocityY(20);
+        }
+
+        //jump
+        if (this.cursors.jump.isDown && this.player.body.blocked.down && this.isdead == false && this.stamina > 0) {
+            this.player.setVelocityY(-300);
+        }
+
+        // anim 
+        if (this.isdead == true && this.played == false) {
+            this.player.anims.play('death', true)
+            this.soundDeath.play();
+            this.time.delayedCall(600, () => {
+                this.played = true
+                this.player.anims.play('deathEnd', true)
+            })
+        } else if (this.hurted == true && this.isdead == false) {
+            this.player.anims.play('hurt', true)
+            this.time.delayedCall(300, () => {
+                this.hurted = false
+                this.player.stop()
+            })
+        } else if (this.isOnSurface == true && this.isdead == false) {
+            this.player.anims.play('climb', true)
+            this.player.setFlipX(false);
+        } else if (this.isOnSurface == false && this.player.body.blocked.down && this.cursors.left.isDown && this.isdead == false) {
+            this.player.anims.play('walk', true)
+            this.player.setFlipX(true);
+            this.player.setOffset(24, 11);
+            this.player.setOrigin(0.75, 0.5);
+        } else if (this.isOnSurface == false && this.player.body.blocked.down && this.cursors.right.isDown && this.isdead == false) {
+            this.player.anims.play('walk', true)
+            this.player.setFlipX(false);
+            this.player.setOffset(6, 11);
+            this.player.setOrigin(0.5, 0.5);
+        } else if (this.isOnSurface == false && this.player.body.blocked.down && this.player.body.velocity.x == 0 && this.isdead == false) {
+            this.player.anims.play('idle', true)
+        }
+
+        if (this.isShouting == false) {
+            this.enemy.anims.play('eIdle', true)
+        } else if (this.isShouting == true) {
+            this.enemy.anims.play('eAttack', true)
+            this.time.delayedCall(600, () => {
+                this.isShouting = false
+            })
+        }
+
+        // Mort
+        if (this.player.body.velocity.y >= 1000) {
+            this.player.setVelocityY(1000);
+        }
+        if (this.pointDeVie <= 0) {
+            this.isdead = true
+            this.player.setVelocityX(0);
+        }
+        if (this.player.body.velocity.y >= 800) {
+            this.tooFast = true
+        } else if (this.isOnSurface == true && this.stamina > 0) {
+            this.tooFast = false
+        }
+        if (this.tooFast == true && this.player.body.blocked.down) {
+            this.isdead = true
+        }
+        if (this.isdead == true) {
+            this.time.delayedCall(3000, () => {
+                this.bgMusic.stop();
+                this.scene.start("death")
+            })
+        }
+
+        // hud
+        if (this.pointDeVie === 2) {
+            this.health.visible = true
+        } else if (this.pointDeVie === 1) {
+            this.health.visible = false
+            this.healthMid.visible = true
+        } else if (this.pointDeVie <= 0) {
+            this.healthMid.visible = false
+        }
+
+        // win
+        if (this.player.body.y > 50) {
+            this.soundWin.play();;
+        } else if (this.player.body.y < 50) {
             this.bgMusic.stop();
-            this.scene.start("death")
-        })
-    }
-
-    // hud
-    if (this.pointDeVie === 2) {
-        this.health.visible = true
-    } else if (this.pointDeVie === 1) {
-        this.health.visible = false
-        this.healthMid.visible = true
-    } else if (this.pointDeVie <= 0) {
-        this.healthMid.visible = false
-    }
-
-    // win
-    if (this.player.body.y > 50) {
-        this.soundWin.play();;
-    } else if (this.player.body.y < 50) {
-        this.bgMusic.stop();
-        this.scene.start("victoire")
-    }
-
-    // projectiles
-    this.enemyBullets.children.each((bullet) => {
-        let cachee = !this.cameraWorld.worldView.contains(bullet.x, bullet.y);
-        if (bullet.active && cachee) {
-          bullet.setActive(false);
-         bullet.setVisible(false);
+            this.scene.start("victoire")
         }
-    });
 
-    this.roche.children.each((bullet) => {
-        let cachee = !this.cameraWorld.worldView.contains(bullet.x, bullet.y);
-        if (bullet.active && cachee) {
-          bullet.setActive(false);
-         bullet.setVisible(false);
-        }
-    });
+        // projectiles
+        this.enemyBullets.children.each((bullet) => {
+            let cachee = !this.cameraWorld.worldView.contains(bullet.x, bullet.y);
+            if (bullet.active && cachee) {
+                bullet.setActive(false);
+                bullet.setVisible(false);
+            }
+        });
+
+        this.roche.children.each((bullet) => {
+            let cachee = !this.cameraWorld.worldView.contains(bullet.x, bullet.y);
+            if (bullet.active && cachee) {
+                bullet.setActive(false);
+                bullet.setVisible(false);
+            }
+        });
 
     }
 }
