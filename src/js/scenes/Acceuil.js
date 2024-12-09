@@ -18,19 +18,19 @@ class Acceuil extends Phaser.Scene {
         let logo = this.add.image(375, 150, "logo").setScale(2).setOrigin(0.5, 0.5);
 
         let btn1 = this.add.image(400, 250, "btn").setScale(3).setInteractive();
-        this.txtBtn1 = this.add.text(360, 235, "commencer", { fontFamily: 'arial' }).setColor('black');
+        this.txtBtn1 = this.add.text(360, 235, "Commencer", { fontFamily: 'arial' }).setColor('black');
         btn1.on("pointerdown", () => {
             this.scene.start("jeu");
         });
 
         let btn2 = this.add.image(400, 300, "btn").setScale(3).setInteractive();
-        this.txtBtn2 = this.add.text(344, 285, "comment jouer?", { fontFamily: 'arial' }).setColor('black');
+        this.txtBtn2 = this.add.text(344, 285, "Comment jouer?", { fontFamily: 'arial' }).setColor('black');
         btn2.on("pointerdown", () => {
             this.scene.start("comment");
         });
 
         let btn3 = this.add.image(400, 350, "btn").setScale(3).setInteractive();
-        this.txtBtn3 = this.add.text(381, 335, "credit", { fontFamily: 'arial' }).setColor('black');
+        this.txtBtn3 = this.add.text(381, 335, "Credit", { fontFamily: 'arial' }).setColor('black');
         btn3.on("pointerdown", () => {
             this.scene.start("credit");
         });

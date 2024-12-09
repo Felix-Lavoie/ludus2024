@@ -526,22 +526,22 @@ class Jeu extends Phaser.Scene {
 
         this.txtCount = 0
         this.txtBg = this.add.image(470, 2580, "txtBg").setScale(5);
-        this.txt1 = this.add.text(335, 2550, `Vous vous retrouver dans un montagne 
-            apres l'avoir vue au loin.`, {
+        this.txt1 = this.add.text(335, 2550, `Vous vous retrouvez dans une montagne.
+                Après l'avoir vue au loin.`, {
             fontFamily: 'arial'
         }).setColor('black');
         this.txtNext = this.add.image(600, 2590, "txtNext").setScale(2).setInteractive();
         this.txtNext.on("pointerdown", () => {
             this.txt1.setVisible(false)
-            this.txt2 = this.add.text(330, 2550, `Rien ne vous tente plus que de la monter. 
-                Alors, qu'attendez vous?`, {
+            this.txt2 = this.add.text(330, 2550, `Rien ne vous tente plus que de la monter.
+                 Alors, qu'attendez-vous ?`, {
                 fontFamily: 'arial'
             }).setColor('black');
             this.txtCount++
         });
 
         this.txtBgStatue = this.add.image(1120, 2990, "txtBg").setScale(2);
-        this.txt3 = this.add.text(1063, 2980, `Vous etes coincer!`, {
+        this.txt3 = this.add.text(1063, 2980, `Vous êtes coincé!`, {
             fontFamily: 'arial'
         }).setColor('black').setScale(0.9);
     }

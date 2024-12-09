@@ -8,7 +8,7 @@ const config = {
     },
     width: 800,
     height: 400,
-    scene: [Jeu, Victoire,  How, Credit, Acceuil, Partie_termine],
+    scene: [Acceuil, Victoire,  How, Credit, Jeu, Partie_termine],
     physics: {
         default: "arcade",
         arcade: {
