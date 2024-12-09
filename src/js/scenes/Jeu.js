@@ -69,10 +69,11 @@ class Jeu extends Phaser.Scene {
         this.stam = this.add.image(50, 40, "stam").setScale(2.6)
         this.heightTxt = this.add.text(5, 55, `hauter: 0`)
 
-        // Monded
+        // Monde
         this.worldWidth = 1280;
         this.worldHeight = 3150;
         this.physics.world.setBounds(0, 0, this.worldWidth, this.worldHeight);
+
         // Tilemap
         const maCarte = this.make.tilemap({
             key: "carte"
@@ -139,7 +140,7 @@ class Jeu extends Phaser.Scene {
         this.player.setSize(21, 37);
         this.player.setOffset(6, 11);
         this.player.body.setGravityY(100);
-        this.pointDeVie = 20;
+        this.pointDeVie = 2;
         this.isdead = false
         this.played = false
         this.tooFast = false
@@ -158,7 +159,7 @@ class Jeu extends Phaser.Scene {
         this.physics.add.collider(this.enemy, objLayer)
 
         // Caméra
-        this.cameras.main.setBounds(this.worldWidth / -2, this.worldHeight / -2, );
+        this.cameras.main.setBounds(this.worldWidth / -2, this.worldHeight / -2,);
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
         this.cameraWorld = this.cameras.add(2280, 0, 1280, 3000)
@@ -538,21 +539,21 @@ class Jeu extends Phaser.Scene {
             }).setColor('black');
             this.txtCount++
         });
+
+        this.txtBgStatue = this.add.image(1120, 2990, "txtBg").setScale(2);
+        this.txt3 = this.add.text(1063, 2980, `Vous etes coincer!`, {
+            fontFamily: 'arial'
+        }).setColor('black').setScale(0.9);
     }
 
     update() {
         // Déplacements
         const walkSpeed = 150;
-        const runSpeed = 1050;
+        const runSpeed = 300;
         const stamWalk = 1
         const stamSpeed = 2
         let stam = stamWalk
         let velocity = walkSpeed;
-
-        // hud 
-        this.height = -((Math.floor(this.player.body.y)) - 3010);
-        this.heightTxt.setText(`hauter: ${this.height}`)
-
 
         // stam math
         this.crop = this.stamina / 32 + 0.75
@@ -561,18 +562,21 @@ class Jeu extends Phaser.Scene {
         if (this.cursors.shift.isDown) {
             velocity = runSpeed;
             stam = stamSpeed
-            //console.log(this.player.x, this.player.y, this.pointDeVie, this.player.body.velocity.y, this.tooFast)
         }
 
+        // ludique
         if (this.txtCount >= 2) {
             this.txt2.setVisible(false)
             this.txtBg.setVisible(false)
             this.txtNext.setVisible(false)
         }
 
-        // score
-        if (this.cursors.up.isDown) {
-            this.events.emit("addScore");
+        if (this.player.body.y > 2970) {
+            this.txtBgStatue.setVisible(true)
+            this.txt3.setVisible(true)
+        } else {
+            this.txtBgStatue.setVisible(false)
+            this.txt3.setVisible(false)
         }
 
         // left and right
@@ -606,12 +610,16 @@ class Jeu extends Phaser.Scene {
         if (this.isdead == true && this.played == false) {
             this.player.anims.play('death', true)
             this.soundDeath.play();
+            this.cameras.main.flash(600);
+            this.cameras.main.shake(100);
             this.time.delayedCall(600, () => {
                 this.played = true
                 this.player.anims.play('deathEnd', true)
             })
         } else if (this.hurted == true && this.isdead == false) {
             this.player.anims.play('hurt', true)
+            this.cameras.main.flash(300);
+            this.cameras.main.shake(100);
             this.time.delayedCall(300, () => {
                 this.hurted = false
                 this.player.stop()
@@ -674,6 +682,15 @@ class Jeu extends Phaser.Scene {
         } else if (this.pointDeVie <= 0) {
             this.healthMid.visible = false
         }
+
+        this.height = -((Math.floor(this.player.body.y)) - 3010);
+        this.heightTxt.setText(`hauter: ${this.height}`)
+
+        // score
+        if (this.cursors.up.isDown) {
+            this.events.emit("addScore");
+        }
+
 
         // win
         if (this.player.body.y > 50) {
