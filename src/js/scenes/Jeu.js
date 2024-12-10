@@ -527,7 +527,7 @@ class Jeu extends Phaser.Scene {
         this.txtCount = 0
         this.txtBg = this.add.image(470, 2580, "txtBg").setScale(5);
         this.txt1 = this.add.text(335, 2550, `Vous vous retrouvez dans une montagne.
-                Après l'avoir vue au loin.`, {
+            Après l'avoir vue au loin.`, {
             fontFamily: 'arial'
         }).setColor('black');
         this.txtNext = this.add.image(600, 2590, "txtNext").setScale(2).setInteractive();
@@ -578,7 +578,8 @@ class Jeu extends Phaser.Scene {
             this.txtBgStatue.setVisible(false)
             this.txt3.setVisible(false)
         }
-
+        console.log(this.player.body.velocity.y)
+        console.log(this.stamina)
         // left and right
         if (this.cursors.left.isDown && this.isdead == false && this.stamina > 0) {
             this.player.setVelocityX(-velocity);
@@ -599,6 +600,9 @@ class Jeu extends Phaser.Scene {
             this.stamina -= stam
         } else if (this.isOnSurface == true && this.isdead == false && this.stamina > 0) {
             this.player.setVelocityY(20);
+        }
+        if(this.stamina < 100 && this.player.body.velocity.y === 0) {
+            this.stamina =+ 10
         }
 
         //jump

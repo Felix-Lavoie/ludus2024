@@ -34,5 +34,6 @@ class Acceuil extends Phaser.Scene {
         btn3.on("pointerdown", () => {
             this.scene.start("credit");
         });
+        localStorage.clear();
     }
 }
